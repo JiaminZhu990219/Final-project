@@ -1,0 +1,79 @@
+##Number of users under different plan types
+SELECT
+	plan_type 
+	,count(1) AS subscribers_cnt 
+FROM subscribers 
+GROUP BY plan_type
+##Comparison of users and revenue for different plan types  
+SELECT
+	substr(account_creation_date,1,7) AS created_month
+	,CASE WHEN plan_type LIKE 'base%' AND plan_type LIKE '%14_day_trial' THEN 'base_14_day_trial'
+		   WHEN plan_type LIKE 'high%' AND plan_type LIKE '%14_day_trial' THEN 'high_14_day_trial'
+		   WHEN plan_type LIKE 'low%' AND plan_type LIKE '%14_day_trial' THEN 'low_14_day_trial'
+		   WHEN plan_type LIKE 'low%' AND plan_type LIKE '%no_trial' THEN 'low_no_trial'
+			 ELSE plan_type END AS plan_type
+	,count(1) AS sub_cnt
+	,avg(monthly_price) AS monthly_price_avg
+	,avg(discount_price) AS discount_price_avg
+	,sum(revenue_net + join_fee) AS revenue 
+	,sum(revenue_net + join_fee)/count(1) AS revenue_avg 
+FROM subscribers
+GROUP BY CASE WHEN plan_type LIKE 'base%' AND plan_type LIKE '%14_day_trial' THEN 'base_14_day_trial'
+		   WHEN plan_type LIKE 'high%' AND plan_type LIKE '%14_day_trial' THEN 'high_14_day_trial'
+		   WHEN plan_type LIKE 'low%' AND plan_type LIKE '%14_day_trial' THEN 'low_14_day_trial'
+		   WHEN plan_type LIKE 'low%' AND plan_type LIKE '%no_trial' THEN 'low_no_trial'
+			 ELSE plan_type END
+			,substr(account_creation_date,1,7)
+	order by substr(account_creation_date,1,7)
+;			 
+##不同注册来源用户
+SELECT
+	t1.account_creation_month
+	,t1.attribution_technical
+	,t1.sub_cnt
+	,t2.cost 
+	,t2.cost/t1.sub_cnt AS CAC 
+FROM (
+	SELECT
+		substr(account_creation_date,1,7) AS account_creation_month 
+		,attribution_technical 
+		,count(DISTINCT subid) AS sub_cnt 
+	FROM subscribers
+	GROUP BY substr(account_creation_date,1,7) 
+	,attribution_technical
+) t1 INNER JOIN advert_spend t2 
+ON t1.account_creation_month = t2.month 
+AND t1.attribution_technical = t2.channel
+
+
+##LTV compute 
+SELECT
+	attribution_technical 
+	,substr(account_creation_date,1,7) AS 注册月份 
+	,substr(last_payment,1,7) AS 支付月份 
+	,count(DISTINCT 
+	,sum(case when payment_period != 0 and trial_completed_TF = 'True' then revenue_net_1month else 0 end) AS Revenue for the month  
+FROM (
+	SELECT
+		t1.subid 
+		,t1.account_creation_date 
+		,t1.revenue_net_1month 
+		,t1.payment_period 
+		,t1.last_payment 
+		,t1.trial_completed_TF
+		,t2.attribution_technical
+	FROM service_reps t1 
+	INNER JOIN subscribers t2 
+	ON t1.subid = t2.subid 
+) t GROUP BY attribution_technical,substr(account_creation_date,1,7),substr(last_payment,1,7)
+
+
+SELECT
+	substr(account_creation_date,1,7) as Registration Month
+	,count(distinct subid) as sub_cnt 
+	,count(1) AS sub_months
+	,count(1)/count(distinct subid)
+	,sum(case when payment_period != 0 and trial_completed_TF = 'True' then revenue_net_1month else 0 end) as revenue
+	,sum(case when payment_period != 0 and trial_completed_TF = 'True' then revenue_net_1month else 0 end)/count(1) AS avg_monthly_revenue
+FROM service_reps
+GROUP BY substr(account_creation_date,1,7) 
