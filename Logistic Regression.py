@@ -120,7 +120,7 @@ data_result
 # In[286]:
 
 
-#4.数据缩放
+#4.Data Scaling
 from sklearn.preprocessing import StandardScaler
 # x = StandardScaler().fit_transform(x)
 for i in range(data_result.shape[1]):
@@ -131,11 +131,11 @@ for i in range(data_result.shape[1]):
 # In[288]:
 
 
-#5.训练集和测试集划分
-from sklearn.model_selection import train_test_split #引用交叉验证中随机划分训练集和测试集的函数
-x_train,x_test,y_train,y_test = train_test_split(x,y,random_state = 2020221127,test_size = 0.3) #随机抽取，测试集占30%。
-#检查训练集和测试集
-print(x_train.shape) #训练集x样本量4773，共88个特征变量
+#5.Training set and testing set division
+from sklearn.model_selection import train_test_split #Invoke the function that randomly divides the training and test sets in cross-validation
+x_train,x_test,y_train,y_test = train_test_split(x,y,random_state = 2020221127,test_size = 0.3) #Randomly selected, the testing set accounts for 30%.
+#Check the training set and testing set
+print(x_train.shape) #Training set x sample size 4773, total 88 feature variables
 print(x_test.shape)
 print(y_train.shape)
 print(y_test.shape)
@@ -144,11 +144,11 @@ print(y_test.shape)
 # In[290]:
 
 
-#6.逻辑回归模型拟合
+#6.Logistic regression model fitting
 from sklearn.linear_model import LogisticRegression
-model = LogisticRegression(max_iter=1000) #默认最大迭代次数100时会提示没有收敛，因此提高最大迭代次数。
+model = LogisticRegression(max_iter=1000) #The default maximum iteration count of 100 will indicate no convergence, so increase the maximum iteration count.
 result = model.fit(x_train,y_train)
-#打印模型精度
+#Print Model Accuracy
 print("train_score:{:.3f}".format(result.score(x_train,y_train)))
 print("test_score:{:.3f}".format(result.score(x_test,y_test)))
 print("coef_:")
