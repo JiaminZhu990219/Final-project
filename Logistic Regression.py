@@ -120,7 +120,7 @@ data_result
 # In[286]:
 
 
-#4.Data Scaling
+#Data Scaling
 from sklearn.preprocessing import StandardScaler
 # x = StandardScaler().fit_transform(x)
 for i in range(data_result.shape[1]):
@@ -131,7 +131,7 @@ for i in range(data_result.shape[1]):
 # In[288]:
 
 
-#5.Training set and testing set division
+#Training set and testing set division
 from sklearn.model_selection import train_test_split #Invoke the function that randomly divides the training and test sets in cross-validation
 x_train,x_test,y_train,y_test = train_test_split(x,y,random_state = 2020221127,test_size = 0.3) #Randomly selected, the testing set accounts for 30%.
 #Check the training set and testing set
@@ -144,7 +144,7 @@ print(y_test.shape)
 # In[290]:
 
 
-#6.Logistic regression model fitting
+#Logistic regression model fitting
 from sklearn.linear_model import LogisticRegression
 model = LogisticRegression(max_iter=1000) #The default maximum iteration count of 100 will indicate no convergence, so increase the maximum iteration count.
 result = model.fit(x_train,y_train)
